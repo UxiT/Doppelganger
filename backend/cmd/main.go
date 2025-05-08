@@ -1,21 +1,30 @@
 package main
 
 import (
-	"fmt"
+	"doppelganger/config"
+	"doppelganger/internal/bootstrap"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
-//TIP <p>To run your code, right-click the code and select <b>Run</b>.</p> <p>Alternatively, click
-// the <icon src="AllIcons.Actions.Execute"/> icon in the gutter and select the <b>Run</b> menu item from here.</p>
-
 func main() {
-	//TIP <p>Press <shortcut actionId="ShowIntentionActions"/> when your caret is at the underlined text
-	// to see how GoLand suggests fixing the warning.</p><p>Alternatively, if available, click the lightbulb to view possible fixes.</p>
-	s := "gopher"
-	fmt.Printf("Hello and welcome, %s!\n", s)
+	container := config.AppContainer
 
-	for i := 1; i <= 5; i++ {
-		//TIP <p>To start your debugging session, right-click your code in the editor and select the Debug option.</p> <p>We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-		// for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.</p>
-		fmt.Println("i =", 100/i)
-	}
+	//defer container.DB.Close()
+
+	app := bootstrap.New(container)
+
+	go app.HTTPSrv.MusRun()
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
+
+	systemCall := <-stop
+
+	container.Logger.Info().Str("signal", systemCall.String()).Msg("stopping application")
+
+	app.HTTPSrv.Stop()
+
+	container.Logger.Info().Msg("application stopped")
 }
