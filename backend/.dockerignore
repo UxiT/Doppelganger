@@ -8,3 +8,4 @@ compose.*
 .idea
 .cache
 bin
+node_modules

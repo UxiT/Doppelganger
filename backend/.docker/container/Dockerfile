@@ -1,6 +1,21 @@
 FROM node:24-alpine3.20
-WORKDIR /usr/src/app
-COPY . .
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+ENV ENV_SUBSTITUTION_ENABLE=true
+ENV TZ=UTC
+ENV PATH /app/node_modules/.bin:$PATH
+
+WORKDIR /app
+
+RUN apk update
+RUN apk add --no-cache make
+
+COPY package.json package.json
+COPY package-lock.json package-lock.json
+
 RUN npm install
-EXPOSE 3001
+
+COPY . .
+
 CMD ["npm", "run", "dev"]
