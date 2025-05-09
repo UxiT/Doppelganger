@@ -1,0 +1,10 @@
+.gitignore
+.dockerignore
+compose.*
+.DS_Store
+.bash_history
+.docker/docker-compose.yml
+.docker/container
+.idea
+.cache
+bin
