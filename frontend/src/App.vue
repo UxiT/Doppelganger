@@ -26,11 +26,20 @@ const accountData = useAppKitAccount()
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center">
-    <h1 class="text-5xl">Wagmi Example</h1>
+  <div class="flex flex-col items-center justify-center pt-10">
+    <h1 class="text-5xl font-bold">Doppelganger</h1>
     <Form v-if="accountData.isConnected"/>
-    <appkit-button balance="hide" namespace="eip155"/>
-    <appkit-network-button v-if="accountData.isConnected" />
+    <div class="wallet flex flex-col items-end">
+      <appkit-button balance="hide" namespace="eip155"/>
+      <appkit-network-button class="pr-2" v-if="accountData.isConnected" />
+    </div>
   </div>
 </template>
 
+<style scoped>
+.wallet {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+</style>
