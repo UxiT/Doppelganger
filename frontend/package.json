@@ -15,7 +15,15 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@reown/appkit": "^1.7.4",
+    "@reown/appkit-adapter-wagmi": "^1.7.4",
+    "@tailwindcss/vite": "^4.1.6",
+    "@tanstack/vue-query": "^5.75.7",
+    "@wagmi/vue": "^0.1.18",
+    "ethers": "^6.14.0",
     "pinia": "^3.0.1",
+    "tailwindcss": "^4.1.6",
+    "viem": "^2.29.1",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
   },
