@@ -9,7 +9,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 WORKDIR /app
 
 RUN apk update
-RUN apk add --no-cache make
+RUN apk add --no-cache make python3 py3-pip gcc g++
 
 COPY package.json package.json
 COPY package-lock.json package-lock.json
