@@ -1,6 +1,7 @@
 <script setup lang="js">
 import { useDisconnect, useAppKit, useAppKitNetwork } from '@reown/appkit/vue'
 import { networks } from "@/config/index.js";
+import Button from "@/shared/Button.vue";
 
 const { open } = useAppKit()
 const { disconnect } = useDisconnect()
@@ -20,8 +21,8 @@ const handleDisconnect = async () => {
 
 <template>
   <div class="flex flex-col items-center justify-center">
-    <button @click="openAppKit" class="cursor-pointer">Open</button>
-    <button @click="handleDisconnect" class="cursor-pointer">Disconenct</button>
-    <button @click="switchToNetwork" class="cursor-pointer">Switch Network</button>
+    <Button @click="openAppKit" class="cursor-pointer mb-2" text="Open" type="primary"/>
+    <Button @click="switchToNetwork" class="cursor-pointer mb-2" text="Switch to Sepolia"/>
+    <Button @click="handleDisconnect" class="cursor-pointer" text="Disconenct" variant="bordered"/>
   </div>
 </template>

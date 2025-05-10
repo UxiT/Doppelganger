@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { createAppKit } from "@reown/appkit/vue";
+import { createAppKit, useAppKitAccount } from "@reown/appkit/vue";
 import { wagmiAdapter, networks, projectId } from "@/config";
 
-import WalletConnectButton from "@/components/WalletConnectButton.vue";
+import WalletConnectButton from "@/shared/WalletConnectButton.vue";
+import Form from "@/views/components/Form.vue";
 
 const appKit = createAppKit({
   adapters: [wagmiAdapter],
@@ -18,18 +19,18 @@ const appKit = createAppKit({
     description: 'Doppelganger App',
     url: 'http://localhost',
   },
-  themeVariables: {
-    '--w3m-accent': '#000000',
-  }
 })
+
+const accountData = useAppKitAccount()
 
 </script>
 
 <template>
   <div class="flex flex-col items-center justify-center">
     <h1 class="text-5xl">Wagmi Example</h1>
-    <appkit-button />
-    <WalletConnectButton/>
+    <Form v-if="accountData.isConnected"/>
+    <appkit-button balance="hide" namespace="eip155"/>
+    <appkit-network-button v-if="accountData.isConnected" />
   </div>
 </template>
 

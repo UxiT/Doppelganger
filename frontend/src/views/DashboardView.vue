@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
-import WalletConnectButton from "@/components/WalletConnectButton.vue";
-import Form from "@/components/Form.vue";
+import WalletConnectButton from "@/shared/WalletConnectButton.vue";
+import Form from "@/views/components/Form.vue";
 </script>
 
 <template>
