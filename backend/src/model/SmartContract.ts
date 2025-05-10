@@ -1,9 +1,13 @@
-import {DataTypes, Model} from "sequelize";
+import { DataTypes, Model } from "sequelize";
+import { Sequelize } from "sequelize"
+import config from "../config";
+
+const sequelize = new Sequelize(config.dbUrl)
 
 class SmartContract extends Model {
     public address!: string;
     public balance!: number;
-    public lastCallAt: Date;
+    public lastCallAt!: Date | null;
 }
 
 SmartContract.init({

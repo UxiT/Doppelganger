@@ -1,9 +1,19 @@
 import express from 'express';
-import {Sequelize} from 'sequelize';
+import { Sequelize } from 'sequelize';
+import cors from 'cors';
+
 import router from'./routes';
 import config from "./config";
 
+const corsOptions = {
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+    methods: ['GET', 'POST', 'OPTIONS'],
+    credentials: true,
+    optionsSuccessStatus: 200
+}
+
 const app = express()
+app.use(cors(corsOptions))
 
 app.use(express.json())
 app.use('/api', router)

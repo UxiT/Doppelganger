@@ -13,7 +13,6 @@ interface Form {
 const form = reactive<Form>({
   amount: null,
   receiverAddress: null,
-  senderAddress: accountData.value.address,
 })
 
 const successMessage = ref('')
@@ -21,7 +20,6 @@ const errorMessage = ref('')
 const isSubmitting = ref(false)
 
 const baseURL = import.meta.env.VITE_API_URL
-console.log(baseURL)
 
 async function handleSubmit() {
   successMessage.value = ''
@@ -37,7 +35,7 @@ async function handleSubmit() {
       body: JSON.stringify({
         amount: form.amount,
         receiver_address: form.receiverAddress,
-        sender_address: form.senderAddress,
+        sender_address: accountData.value.address,
       })
     })
 

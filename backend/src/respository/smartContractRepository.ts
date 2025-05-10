@@ -1,4 +1,4 @@
-import {SmartContract} from "../model/SmartContract"
+import SmartContract from "../model/SmartContract"
 
 type SmartContractListFilter = {
     minBalance?: number;
