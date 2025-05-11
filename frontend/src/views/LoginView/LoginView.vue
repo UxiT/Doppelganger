@@ -7,8 +7,8 @@
       label-width="120px"
       class="auth-form"
     >
-      <el-form-item label="Email" prop="email">
-        <el-input v-model="form.email" autocomplete="off" />
+      <el-form-item label="Login" prop="username">
+        <el-input v-model="form.username" autocomplete="off" />
       </el-form-item>
 
       <el-form-item label="Password" prop="password">
@@ -45,7 +45,7 @@ import type { FormInstance } from 'element-plus';
 import router from '@/router';
 
 interface LoginForm {
-  email: string;
+  username: string;
   password: string;
 }
 
@@ -55,9 +55,9 @@ const form = ref<LoginForm>({
 });
 
 const rules = {
-  email: [
-    { required: true, message: 'Please input email', trigger: 'blur' },
-    { type: 'email', message: 'Please input a valid email', trigger: ['blur', 'change'] },
+  username: [
+    { required: true, message: 'Please input username', trigger: 'blur' },
+    { min: 3, message: 'Username must be at least 3 characters', trigger: 'blur' },
   ],
   password: [
     { required: true, message: 'Please input password', trigger: 'blur' },
@@ -72,7 +72,7 @@ const submitForm = () => {
   loginForm.value?.validate((valid) => {
     if (valid) {
       login({
-        email: form.value.email,
+        username: form.value.username,
         password: form.value.password,
       });
     }

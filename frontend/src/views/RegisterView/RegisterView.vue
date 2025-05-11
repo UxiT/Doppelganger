@@ -1,11 +1,76 @@
+
+<script lang="ts" setup>
+import { ref } from 'vue';
+import { useRegister } from '@/composables/useRegister';
+import type { FormInstance } from 'element-plus';
+import router from '@/router';
+import {useAppKitAccount} from "@reown/appkit/vue";
+
+interface RegisterForm {
+  username: string;
+  email: string;
+  password: string;
+}
+
+const form = ref<RegisterForm>({
+  username: '',
+  email: '',
+  password: '',
+});
+
+const rules = {
+  username: [
+    { required: true, message: 'Please input username', trigger: 'blur' },
+    { min: 3, message: 'Username must be at least 3 characters', trigger: 'blur' },
+  ],
+  email: [
+    { required: true, message: 'Please input email', trigger: 'blur' },
+    { type: 'email', message: 'Please input a valid email', trigger: ['blur', 'change'] },
+  ],
+  password: [
+    { required: true, message: 'Please input password', trigger: 'blur' },
+    { min: 6, message: 'Password must be at least 6 characters', trigger: 'blur' },
+  ],
+};
+
+const registerForm = ref<FormInstance>();
+
+const accountData = useAppKitAccount()
+
+const { register, loading } = useRegister();
+
+const submitForm = () => {
+  registerForm.value?.validate((valid) => {
+    if (valid) {
+      register({
+        username: form.value.username,
+        email: form.value.email,
+        password: form.value.password,
+        internalWallet: accountData.value.address,
+      });
+    }
+  });
+};
+
+const resetForm = () => {
+  registerForm.value?.resetFields();
+};
+
+const goToLogin = () => {
+  router.push('/login');
+};
+</script>
+
 <template>
   <el-card class="max-w-[450px] mt-10 mx-auto">
+    <span v-if="!accountData.isConnected">Please, connect the wallet to continue</span>
   <el-form
     :model="form"
     :rules="rules"
     ref="registerForm"
     label-width="120px"
     class="auth-form"
+    v-if="accountData.isConnected"
   >
     <el-form-item label="Username" prop="username">
       <el-input v-model="form.username" autocomplete="off" />
@@ -42,63 +107,6 @@
   </el-card>
 </template>
 
-<script lang="ts" setup>
-import { ref } from 'vue';
-import { useRegister } from '@/composables/useRegister';
-import type { FormInstance } from 'element-plus';
-import router from '@/router';
-
-interface RegisterForm {
-  username: string;
-  email: string;
-  password: string;
-}
-
-const form = ref<RegisterForm>({
-  username: '',
-  email: '',
-  password: '',
-});
-
-const rules = {
-  username: [
-    { required: true, message: 'Please input username', trigger: 'blur' },
-    { min: 3, message: 'Username must be at least 3 characters', trigger: 'blur' },
-  ],
-  email: [
-    { required: true, message: 'Please input email', trigger: 'blur' },
-    { type: 'email', message: 'Please input a valid email', trigger: ['blur', 'change'] },
-  ],
-  password: [
-    { required: true, message: 'Please input password', trigger: 'blur' },
-    { min: 6, message: 'Password must be at least 6 characters', trigger: 'blur' },
-  ],
-};
-
-const registerForm = ref<FormInstance>();
-
-const { register, loading } = useRegister();
-
-const submitForm = () => {
-  registerForm.value?.validate((valid) => {
-    if (valid) {
-      register({
-        username: form.value.username,
-        email: form.value.email,
-        password: form.value.password,
-      });
-    }
-  });
-};
-
-const resetForm = () => {
-  registerForm.value?.resetFields();
-};
-
-const goToLogin = () => {
-  router.push('/login');
-};
-</script>
 
 <style scoped>
 .auth-form {

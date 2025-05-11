@@ -7,6 +7,7 @@ interface RegisterData {
   username: string;
   email: string;
   password: string;
+  internalWallet: string;
 }
 
 export function useRegister() {

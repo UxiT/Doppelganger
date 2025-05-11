@@ -6,7 +6,7 @@ import { User, Intent, userVaultMapping } from './models.js';
 dotenv.config();
 
 const corsOptions = {
-    origin: ['*'],
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
     methods: ['GET', 'POST', 'OPTIONS'],
     credentials: true,
     optionsSuccessStatus: 200

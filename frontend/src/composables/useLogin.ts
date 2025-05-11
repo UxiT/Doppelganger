@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 
 interface LoginCredentials {
-  email: string;
+  username: string;
   password: string;
 }
 
@@ -22,7 +22,7 @@ export function useLogin() {
     loading.value = true;
     try {
       const response = await api.post<LoginResponse>('/login', credentials);
-      const token = response.data.accessToken;
+      const token = response.data.token;
 
       if (token) {
         localStorage.setItem('access_token', token);

@@ -38,10 +38,7 @@ const activeName = ref('transfer')
       </el-tab-pane>
     </el-tabs>
 
-    <div class="wallet flex flex-col items-end">
-      <appkit-button balance="hide" namespace="eip155" />
-      <appkit-network-button class="pr-2" v-if="accountData.isConnected" />
-    </div>
+
   </div>
 </template>
 
