@@ -10,4 +10,9 @@
 body {
   font-family: 'Inter', sans-serif;
   font-optical-sizing: auto;
+
+  background: #d3d6e0;
+  background: linear-gradient(180deg,rgba(211, 214, 224, 1) 0%, rgba(211, 224, 230, 1) 100%);
+
+  min-height: 100vh;
 }
