@@ -1,4 +1,4 @@
-const hre = require("hardhat");
+import hre from "hardhat";
 import { config } from "dotenv";
 
 config();
@@ -6,7 +6,7 @@ config();
 // Configuration parameters
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const VAULT_TOKEN_ADDRESS = "0x3Ee8Ff2865d5202942c65e91BA537cc815dFA0Fd";
-const RECEIVER_ADDRESS = "0x45f5609F5965FF9B2b45401D228440fd4a76b964";
+const RECEIVER_ADDRESS = "0x45eB84F286D5057b302C31d709b884754247fdEc";
 const MINT_AMOUNT = "1"; // Amount in tokens
 
 async function main() {

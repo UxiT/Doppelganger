@@ -135,6 +135,15 @@ const Intent = sequelize.define(
             type: DataTypes.STRING,
             allowNull: true,
         },
+        withdrawPermitted: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        },
+        permitTransactionId: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
         createdAt: {
             type: DataTypes.DATE,
             allowNull: false,

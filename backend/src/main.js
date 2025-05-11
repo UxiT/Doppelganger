@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { User, Intent, userVaultMapping } from './models.js';
+
 dotenv.config();
 
 const corsOptions = {
@@ -174,6 +175,8 @@ router.get('/intents', authenticateToken, async (req, res) => {
 
 app.use(express.json())
 app.use('/api', router)
+
+import './listener.js';
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
