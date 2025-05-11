@@ -71,9 +71,9 @@ router.post('/login', async (req, res) => {
 // Create new intent
 router.post('/intents', authenticateToken, async (req, res) => {
     try {
-        const { amount } = req.body;
+        const { amount, transactionId } = req.body;
         const userId = req.user.userId;
-        const intent = await Intent.create({ userId, amount });
+        const intent = await Intent.create({ userId, amount, transactionId });
         const mapping = await userVaultMapping(userId);
 
         res.status(200).json({
