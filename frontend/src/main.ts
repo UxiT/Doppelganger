@@ -1,10 +1,12 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import { WagmiPlugin } from "@wagmi/vue";
+import { WagmiPlugin } from '@wagmi/vue'
 import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query'
-import { wagmiAdapter } from "@/config"
+import { wagmiAdapter } from '@/config'
 import App from './App.vue'
-import './assets/main.css'
+
+import './styles/styles.css'
+import 'element-plus/dist/index.css'
 
 const queryClient: QueryClient = new QueryClient()
 
