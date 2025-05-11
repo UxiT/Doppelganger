@@ -7,9 +7,10 @@ import { useAppKitAccount } from '@reown/appkit/vue'
 import { vaultContract } from '@/contracts/vault.ts'
 import { tokenContract } from '@/contracts/vaultToken.ts'
 import { showError, showSuccess } from '@/shared/utils/messageBox.ts'
-import { Form } from '@/shared/types/Form.ts'
+import { Form } from '@/views/TransferView/types/Form.ts'
 import { wagmiConfig } from '@/config'
 import postV1CreateTransfer from '@/api/postV1CreateTransfer.ts'
+import { useIntents } from '@/composables/useIntents.ts'
 
 const labelWidth = '150px'
 
@@ -51,6 +52,8 @@ const handleDeposit = async (amount: bigint) => {
   await waitForTransactionReceipt(wagmiConfig, { hash: depositHash.value })
 }
 
+const { createIntent } = useIntents()
+
 async function handleSubmit() {
   isSubmitting.value = true
 
@@ -62,9 +65,12 @@ async function handleSubmit() {
   })
 
   try {
-    const message = postV1CreateTransfer(form.receiverAddress, depositHash.value.toString())
+    const created = await createIntent(depositHash.value.toString(), form.receiverAddress)
 
-    showSuccess(message)
+    if (created) {
+      console.log(created.id)
+      showSuccess('Created intent with id ' + created.id)
+    }
   } catch (error) {
     console.error(error)
 

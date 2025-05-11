@@ -1,42 +1,42 @@
-import { ref } from 'vue';
-import api from '@/services/api';
-import { useRouter } from 'vue-router';
-import { ElMessage } from 'element-plus';
+import { ref } from 'vue'
+import api from '@/services/api'
+import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 
 interface LoginCredentials {
-  username: string;
-  password: string;
+  username: string
+  password: string
 }
 
 interface LoginResponse {
-  message: string,
-  token: string,
-  userId: string,
+  message: string
+  token: string
+  userId: string
 }
 
 export function useLogin() {
-  const router = useRouter();
-  const loading = ref(false);
+  const router = useRouter()
+  const loading = ref(false)
 
   const login = async (credentials: LoginCredentials): Promise<void> => {
-    loading.value = true;
+    loading.value = true
     try {
-      const response = await api.post<LoginResponse>('/login', credentials);
-      const token = response.data.token;
+      const response = await api.post<LoginResponse>('/login', credentials)
+      const token = response.data.token
 
       if (token) {
-        localStorage.setItem('access_token', token);
-        ElMessage.success('Login successful!');
-        router.push('/');
+        localStorage.setItem('access_token', token)
+        ElMessage.success('Login successful!')
+        router.push('/')
       } else {
-        throw new Error('No token received');
+        throw new Error('No token received')
       }
     } catch (error: any) {
-      ElMessage.error(error.response?.data?.message || 'Login failed.');
+      ElMessage.error(error.response?.data?.message || 'Login failed.')
     } finally {
-      loading.value = false;
+      loading.value = false
     }
-  };
+  }
 
-  return { login, loading };
+  return { login, loading }
 }

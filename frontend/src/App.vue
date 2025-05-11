@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {RouterView} from "vue-router";
-import {createAppKit, useAppKitAccount} from "@reown/appkit/vue";
-import {networks, projectId, wagmiAdapter} from "@/config";
+import { RouterView } from 'vue-router'
+import { createAppKit, useAppKitAccount } from '@reown/appkit/vue'
+import { networks, projectId, wagmiAdapter } from '@/config'
 
 const appKit = createAppKit({
   adapters: [wagmiAdapter],
@@ -20,11 +20,10 @@ const appKit = createAppKit({
 })
 
 const accountData = useAppKitAccount()
-
 </script>
 
 <template>
-  <RouterView/>
+  <RouterView />
   <div class="wallet flex flex-col items-end">
     <appkit-button balance="hide" namespace="eip155" />
     <appkit-network-button class="pr-2" v-if="accountData.isConnected" />
@@ -37,5 +36,4 @@ const accountData = useAppKitAccount()
   top: 1rem;
   right: 1rem;
 }
-
 </style>

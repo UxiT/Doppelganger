@@ -1,22 +1,21 @@
-
 <script lang="ts" setup>
-import { ref } from 'vue';
-import { useRegister } from '@/composables/useRegister';
-import type { FormInstance } from 'element-plus';
-import router from '@/router';
-import {useAppKitAccount} from "@reown/appkit/vue";
+import { ref } from 'vue'
+import { useRegister } from '@/composables/useRegister'
+import type { FormInstance } from 'element-plus'
+import router from '@/router'
+import { useAppKitAccount } from '@reown/appkit/vue'
 
 interface RegisterForm {
-  username: string;
-  email: string;
-  password: string;
+  username: string
+  email: string
+  password: string
 }
 
 const form = ref<RegisterForm>({
   username: '',
   email: '',
   password: '',
-});
+})
 
 const rules = {
   username: [
@@ -31,13 +30,13 @@ const rules = {
     { required: true, message: 'Please input password', trigger: 'blur' },
     { min: 6, message: 'Password must be at least 6 characters', trigger: 'blur' },
   ],
-};
+}
 
-const registerForm = ref<FormInstance>();
+const registerForm = ref<FormInstance>()
 
 const accountData = useAppKitAccount()
 
-const { register, loading } = useRegister();
+const { register, loading } = useRegister()
 
 const submitForm = () => {
   registerForm.value?.validate((valid) => {
@@ -47,66 +46,55 @@ const submitForm = () => {
         email: form.value.email,
         password: form.value.password,
         internalWallet: accountData.value.address,
-      });
+      })
     }
-  });
-};
+  })
+}
 
 const resetForm = () => {
-  registerForm.value?.resetFields();
-};
+  registerForm.value?.resetFields()
+}
 
 const goToLogin = () => {
-  router.push('/login');
-};
+  router.push('/login')
+}
 </script>
 
 <template>
   <el-card class="max-w-[450px] mt-10 mx-auto">
     <span v-if="!accountData.isConnected">Please, connect the wallet to continue</span>
-  <el-form
-    :model="form"
-    :rules="rules"
-    ref="registerForm"
-    label-width="120px"
-    class="auth-form"
-    v-if="accountData.isConnected"
-  >
-    <el-form-item label="Username" prop="username">
-      <el-input v-model="form.username" autocomplete="off" />
-    </el-form-item>
+    <el-form
+      :model="form"
+      :rules="rules"
+      ref="registerForm"
+      label-width="120px"
+      class="auth-form"
+      v-if="accountData.isConnected"
+    >
+      <el-form-item label="Username" prop="username">
+        <el-input v-model="form.username" autocomplete="off" />
+      </el-form-item>
 
-    <el-form-item label="Email" prop="email">
-      <el-input v-model="form.email" autocomplete="off" />
-    </el-form-item>
+      <el-form-item label="Email" prop="email">
+        <el-input v-model="form.email" autocomplete="off" />
+      </el-form-item>
 
-    <el-form-item label="Password" prop="password">
-      <el-input
-        v-model="form.password"
-        type="password"
-        autocomplete="off"
-      />
-    </el-form-item>
+      <el-form-item label="Password" prop="password">
+        <el-input v-model="form.password" type="password" autocomplete="off" />
+      </el-form-item>
 
-    <el-form-item>
-      <el-button
-        type="primary"
-        :loading="loading"
-        @click="submitForm"
-      >
-        Register
-      </el-button>
-      <el-button @click="resetForm">Reset</el-button>
-    </el-form-item>
+      <el-form-item>
+        <el-button type="primary" :loading="loading" @click="submitForm"> Register </el-button>
+        <el-button @click="resetForm">Reset</el-button>
+      </el-form-item>
 
-    <el-form-item>
-      <el-text>Already have an account?</el-text>
-      <el-button class="ml-2" type="text" @click="goToLogin">Login</el-button>
-    </el-form-item>
-  </el-form>
+      <el-form-item>
+        <el-text>Already have an account?</el-text>
+        <el-button class="ml-2" type="text" @click="goToLogin">Login</el-button>
+      </el-form-item>
+    </el-form>
   </el-card>
 </template>
-
 
 <style scoped>
 .auth-form {
