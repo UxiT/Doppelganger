@@ -9,6 +9,7 @@ import { tokenContract } from '@/contracts/vaultToken.ts'
 import { showError, showSuccess } from '@/shared/utils/messageBox.ts'
 import { Form } from '@/shared/types/Form.ts'
 import { wagmiConfig } from '@/config'
+import postV1CreateTransfer from '@/api/postV1CreateTransfer.ts'
 
 const labelWidth = '150px'
 
@@ -34,7 +35,7 @@ const handleDeposit = async (amount: bigint) => {
       address: tokenContract.address,
       functionName: 'approve',
       args: [accountData.value.address, amount - allowance],
-    }).catch((err) => showError(err?.message ?? 'Transaction was not completed'))
+    })
 
     await waitForTransactionReceipt(wagmiConfig, { hash: approveHash })
   }
@@ -45,44 +46,25 @@ const handleDeposit = async (amount: bigint) => {
     abi: vaultContract.abi,
     functionName: 'deposit',
     args: [amount],
-  }).catch((err) => showError(err?.message ?? 'Transaction was not completed'))
-
-  await waitForTransactionReceipt(wagmiConfig, { hash: depositHash.value }).catch((err) => {
-    console.error(err)
-    showError('Transaction failed.')
   })
+
+  await waitForTransactionReceipt(wagmiConfig, { hash: depositHash.value })
 }
 
 async function handleSubmit() {
   isSubmitting.value = true
 
-  await handleDeposit(parseEther(form.amount.toString()))
-    .catch((err) => {
-      showError(err?.message ?? 'Transaction was not completed')
-      isSubmitting.value = false;
+  await handleDeposit(parseEther(form.amount.toString())).catch((err) => {
+    showError('Transaction was not completed')
+    isSubmitting.value = false
 
-      return
-    })
+    throw err
+  })
 
   try {
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        receiver_address: form.receiverAddress,
-        transaction_id: depositHash.value.toString(),
-      }),
-    }
+    const message = postV1CreateTransfer(form.receiverAddress, depositHash.value.toString())
 
-    const response = await fetch(import.meta.env.VITE_API_URL + '/v1/transfer', requestOptions)
-
-    if (!response.ok) {
-      throw new Error('Transfer request failed.')
-    }
-
-    const data = await response.json()
-
-    showSuccess(data.message)
+    showSuccess(message)
   } catch (error) {
     console.error(error)
 
