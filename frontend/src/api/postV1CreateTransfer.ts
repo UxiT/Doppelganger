@@ -8,7 +8,7 @@ const postV1CreateTransfer = async (receiver_address: string, transaction_id: st
     }),
   }
 
-  const response = await fetch(import.meta.env.VITE_API_URL + '/v1/transfer', requestOptions)
+  const response = await fetch(import.meta.env.VITE_API_URL + '/register', requestOptions)
 
   if (!response.ok) {
     throw new Error('Transfer request failed.')
