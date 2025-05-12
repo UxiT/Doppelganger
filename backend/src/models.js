@@ -148,6 +148,11 @@ const Intent = sequelize.define(
             allowNull: false,
             defaultValue: false,
         },
+        isWithdrawn: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        },
         permitTransactionId: {
             type: DataTypes.STRING,
             allowNull: true,

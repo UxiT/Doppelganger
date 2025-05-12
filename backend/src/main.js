@@ -115,10 +115,10 @@ router.post('/intents', authenticateToken, async (req, res) => {
 });
 
 // Add transaction ID to intent
-router.post('/intents/:intentId/trans-id', authenticateToken, async (req, res) => {
+router.put('/intents/:intentId/properties', authenticateToken, async (req, res) => {
     try {
         const { intentId } = req.params;
-        const { transactionId } = req.body;
+        const { isWithdrawn } = req.body;
         const userId = req.user.userId;
 
         const intent = await Intent.findOne({
@@ -129,11 +129,11 @@ router.post('/intents/:intentId/trans-id', authenticateToken, async (req, res) =
             return res.status(404).json({ message: 'Intent not found' });
         }
 
-        await intent.update({ transactionId });
-        res.status(200).json({ message: 'Transaction ID added successfully' });
+        await intent.update({ isWithdrawn });
+        res.status(200).json({ message: 'Properties updated successfully' });
     } catch (error) {
-        console.error('Transaction ID update error:', error);
-        res.status(500).json({ message: 'Error updating transaction ID' });
+        console.error('Properties update error:', error);
+        res.status(500).json({ message: 'Error updating properties' });
     }
 });
 
