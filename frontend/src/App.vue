@@ -29,6 +29,7 @@ const accountData = useAppKitAccount()
   <div class="wallet flex flex-col items-end">
     <appkit-button balance="hide" namespace="eip155" />
     <appkit-network-button class="pr-2" v-if="accountData.isConnected" />
+    <el-button type="danger" plain class="mr-2 mt-3">Logout</el-button>
   </div>
 </template>
 
