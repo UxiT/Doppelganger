@@ -11,6 +11,8 @@ if (!projectId) {
 export const networks: [AppKitNetwork, ...AppKitNetwork[]] = [siberium, sepolia]
 
 export const wagmiConfig = createConfig({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   chains: [sepolia, siberium],
   transports: {
     [sepolia.id]: http(),

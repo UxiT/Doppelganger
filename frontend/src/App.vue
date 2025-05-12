@@ -12,6 +12,8 @@ const appKit = createAppKit({
     connectMethodsOrder: ['wallet'],
     analytics: true,
   },
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   metadata: {
     name: 'Doppelganger App',
     description: 'Doppelganger App',

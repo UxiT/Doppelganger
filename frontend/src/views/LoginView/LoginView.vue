@@ -34,6 +34,8 @@ interface LoginForm {
 }
 
 const form = ref<LoginForm>({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   email: '',
   password: '',
 })

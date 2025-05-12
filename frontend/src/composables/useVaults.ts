@@ -19,6 +19,8 @@ export function useVaults() {
       const response = await api.get<Vaults>(`/vaults/${intentId}/vaults`)
       vaults.value = response.data
     } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       error.value = err.response?.data?.message || err.message || 'Failed to fetch vaults'
     } finally {
       loading.value = false

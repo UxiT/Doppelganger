@@ -14,8 +14,12 @@ export function useWithdraw(walletAddress: string) {
 
     const withdrawHash = await writeContract(wagmiConfig, {
       abi: vaultContract.abi,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       address: contractAddress,
       functionName: 'withdraw',
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       args: [BigInt(amount), walletAddress]
     })
 

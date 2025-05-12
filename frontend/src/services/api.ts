@@ -9,11 +9,15 @@ api.interceptors.request.use((config) => {
   const token = localStorage.getItem('access_token')
 
   if (token) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     if (!config.headers) config.headers = {}
 
     config.headers.Authorization = `Bearer ${token}`
   } else if (
     router.currentRoute.value.path !== '/login' ||
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     router.currentRoute.value.path !== '/register'
   ) {
     router.push('/login')

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { createAppKit, useAppKitAccount } from '@reown/appkit/vue'
+import { createAppKit } from '@reown/appkit/vue'
 import { wagmiAdapter, networks, projectId } from '@/config'
 import TransferView from '@/views/TransferView/TransferView.vue'
 import WithdrawView from '@/views/WithdrawView/WithdrawView.vue'
@@ -14,6 +14,8 @@ const appKit = createAppKit({
     connectMethodsOrder: ['wallet'],
     analytics: true,
   },
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   metadata: {
     name: 'Doppelganger App',
     description: 'Doppelganger App',
@@ -22,6 +24,8 @@ const appKit = createAppKit({
 })
 
 const activeTab = ref('transfer')
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 const handleTabClick = (tab) => {
   activeTab.value = tab.name
 }

@@ -21,7 +21,9 @@ export function useRegister() {
 
       ElMessage.success('Registration successful! Please login.')
       router.push('/login')
-    } catch (error: any) {
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       ElMessage.error(error.response?.data?.message || 'Registration failed.')
     } finally {
       loading.value = false

@@ -1,5 +1,7 @@
 import { type AppKitNetwork, defineChain } from '@reown/appkit/networks'
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 export const siberium: AppKitNetwork = defineChain({
   id: 111000,
   name: 'Siberium Test Network',

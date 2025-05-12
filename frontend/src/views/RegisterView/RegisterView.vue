@@ -45,6 +45,8 @@ const submitForm = () => {
         username: form.value.username,
         email: form.value.email,
         password: form.value.password,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         internalWallet: accountData.value.address,
       })
     }

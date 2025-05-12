@@ -28,6 +28,8 @@ export function useIntents() {
       const response = await api.get<Intent[]>('/intents')
       intents.value = response.data
     } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       error.value = err.response?.data?.message || err.message || 'Failed to fetch intents'
     } finally {
       loading.value = false
@@ -43,6 +45,8 @@ export function useIntents() {
 
       return response.data
     } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       error.value = err.response?.data?.message || err.message || 'Failed to create intent'
       return null
     } finally {

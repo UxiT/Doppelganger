@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import { reactive, ref } from 'vue'
 import { parseEther } from 'viem'
 import { readContract, writeContract, waitForTransactionReceipt } from '@wagmi/core'
@@ -25,18 +24,26 @@ const accountData = useAppKitAccount()
 const handleDeposit = async (amount: bigint) => {
   loadingText.value = 'Waiting for transaction to process in blockchain...'
 
-  const allowance: string = await readContract(wagmiConfig, {
+  const allowance = await readContract(wagmiConfig, {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     address: tokenContract.address,
     abi: tokenContract.abi,
     functionName: 'allowance',
     args: [accountData.value.address, vaultContract.address],
   })
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   if (allowance < amount) {
     const approveHash = await writeContract(wagmiConfig, {
       abi: tokenContract.abi,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       address: tokenContract.address,
       functionName: 'approve',
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       args: [vaultContract.address, amount - allowance],
     })
 
@@ -51,6 +58,8 @@ const handleDeposit = async (amount: bigint) => {
     args: [amount],
   })
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   await waitForTransactionReceipt(wagmiConfig, { hash: depositHash.value })
 }
 

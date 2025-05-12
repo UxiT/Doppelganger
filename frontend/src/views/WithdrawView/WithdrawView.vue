@@ -12,7 +12,7 @@ import {tokenContract} from "@/contracts/vaultToken.ts";
 const accountData = useAppKitAccount()
 
 const { intents, loading, getIntents } = useIntents()
-const { loading: withdrawLoading, withdraw } = useWithdraw(accountData.value.address)
+const { loading: withdrawLoading, withdraw } = useWithdraw(accountData.value.address ?? '')
 const { vaults, error: vaultsError, getVaults } = useVaults()
 const { symbol, getSymbol } = useTokenSymbol(tokenContract.address)
 
