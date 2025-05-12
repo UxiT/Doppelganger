@@ -1,5 +1,6 @@
 import {ref} from "vue";
 import api from "@/services/api.ts";
+import {parseEther} from "viem";
 
 export function useFaucet() {
   const loading = ref(false)
@@ -7,8 +8,9 @@ export function useFaucet() {
 
   const mintToken = async (address: string) => {
     try {
+      const amount = parseEther('1')
       loading.value = true
-      const response = await api.get(`/mint?address=${address}`)
+      const response = await api.post(`/mint?address=${address}&amount=${amount}`)
 
       loading.value = false
       return response.data
