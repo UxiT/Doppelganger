@@ -21,8 +21,6 @@ const appKit = createAppKit({
   },
 })
 
-const accountData = useAppKitAccount()
-
 const activeName = ref('transfer')
 </script>
 
