@@ -196,6 +196,23 @@ router.get('/intents', authenticateToken, async (req, res) => {
     }
 });
 
+router.get('/vaults', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const mapping = await userVaultMapping(userId);
+
+        if (!mapping) {
+            return res.status(404).json({ message: 'Vault mapping not found' });
+        }
+
+        res.status(200).json(mapping);
+    } catch (error) {
+        console.error('Vaults fetch error:', error);
+        res.status(500).json({ message: 'Error fetching vaults' });
+    }
+});
+
+
 app.use(express.json())
 app.use('/api', router)
 
