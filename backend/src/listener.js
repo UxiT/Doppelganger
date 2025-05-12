@@ -36,9 +36,15 @@ export async function setupListener() {
 
             for (const event of events) {
                 const transactionId = event.transactionHash;
+                console.log("event transactionId", transactionId);
                 const intent = await Intent.findOne({
                     where: { transactionId }
                 });
+
+                if (!intent) {
+                    console.error(`Intent not found for transaction ${transactionId}`);
+                    continue;
+                }
 
                 const vaultMapping = await VaultMapping.findOne({
                     where: { userId: intent.userId }
@@ -49,9 +55,20 @@ export async function setupListener() {
                     continue;
                 }
 
-                if (vaultMapping.internalVaultId === vaultId && intent) {
+                const externalVault = await Vault.findOne({
+                    where: { id: vaultMapping.externalVaultId }
+                });
+
+                if (!externalVault) {
+                    console.error(`External vault not found by id ${vaultMapping.externalVaultId}`);
+                    continue;
+                }
+
+                if (vaultMapping.internalVaultId === vaultId) {
+                    console.log("found deposit for vault", vaultId);
+
                     const externalVaultContract = new ethers.Contract(
-                        vaultMapping.externalVault.address,
+                        externalVault.address,
                         vaultABI,
                         provider
                     );

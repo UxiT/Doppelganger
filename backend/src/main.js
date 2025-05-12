@@ -48,8 +48,9 @@ const authenticateToken = async (req, res, next) => {
 // Middleware to log request path and time
 app.use((req, res, next) => {
     const timestamp = new Date().toISOString();
-    console.log(`[${timestamp}] ${req.method} ${req.path}`);
+    console.log(`[${timestamp}] Start ${req.method} ${req.path}`);
     next();
+    console.log(`[${timestamp}] End ${req.method} ${req.path} - Status: ${res.statusCode}`);
 });
 
 
