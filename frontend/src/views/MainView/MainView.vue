@@ -21,26 +21,37 @@ const appKit = createAppKit({
   },
 })
 
-const activeName = ref('transfer')
+const activeTab = ref('transfer')
+const handleTabClick = (tab) => {
+  activeTab.value = tab.name
+}
+
 </script>
 
 <template>
   <div class="flex flex-col items-center justify-center pt-10">
-    <el-tabs v-model="activeName" class="tabs">
+    <el-tabs v-model="activeTab" class="tabs" @tab-click="handleTabClick">
       <el-tab-pane label="Transfer" name="transfer">
-        <TransferView />
+        <TransferView :key="activeTab"/>
       </el-tab-pane>
       <el-tab-pane label="Withdraw" name="withdraw">
-        <WithdrawView />
+        <WithdrawView :key="activeTab" />
       </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 
 <style scoped>
-.wallet {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
+.tabs {
+  width: 25%;
+  min-width: 450px;
+}
+
+@media (max-width: 600px) {
+  .tabs {
+    width: 80%;
+    min-width: 280px;
+    margin-top: 15%;
+  }
 }
 </style>

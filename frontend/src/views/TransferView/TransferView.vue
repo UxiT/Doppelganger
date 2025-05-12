@@ -6,7 +6,7 @@ const accountData = useAppKitAccount()
 </script>
 
 <template>
-  <el-card class="min-w-[450px]">
+  <el-card class="min-w-[300px] w-full">
     <template #header> Transfer Form </template>
     <Form v-if="accountData.isConnected" />
   </el-card>

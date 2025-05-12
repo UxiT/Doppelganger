@@ -13,7 +13,7 @@ import { wagmiConfig } from '@/config'
 import { useIntents } from '@/composables/useIntents.ts'
 import { type FormInstance } from "element-plus";
 
-const labelWidth = '150px'
+const labelWidth = '40%'
 
 const form = reactive<Form>({ amount: null, receiverAddress: null })
 const formRef = ref<FormInstance | null>(null)
@@ -98,7 +98,7 @@ async function handleSubmit() {
 
 <template>
   <el-form v-loading="isSubmitting" :model="form" ref="formRef">
-    <el-form-item label="Amount" :label-width="labelWidth">
+    <el-form-item label="Amount" class="label">
       <el-input-number
         v-model="form.amount"
         :min="0.001"
@@ -111,7 +111,7 @@ async function handleSubmit() {
       </el-input-number>
     </el-form-item>
 
-    <el-form-item label="Receiver Address" :label-width="labelWidth">
+    <el-form-item label="Receiver Address" class="label">
       <el-input v-model="form.receiverAddress" placeholder="Enter receiver address" />
     </el-form-item>
 
@@ -133,3 +133,15 @@ async function handleSubmit() {
     </el-dialog>
   </el-form>
 </template>
+
+<style>
+.label label {
+  width: 150px;
+}
+@media (max-width: 600px) {
+  .label label {
+    display: none;
+  }
+}
+
+</style>
