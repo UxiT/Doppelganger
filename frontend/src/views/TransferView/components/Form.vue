@@ -8,7 +8,7 @@ import { vaultContract } from '@/contracts/vault.ts'
 import { tokenContract } from '@/contracts/vaultToken.ts'
 import { showError, showSuccess } from '@/shared/utils/messageBox.ts'
 import { type Form } from '@/views/TransferView/types/Form.ts'
-import { wagmiConfig } from '@/config'
+import {wagmiAdapter} from '@/config'
 import { useIntents } from '@/composables/useIntents.ts'
 import { type FormInstance } from "element-plus";
 
@@ -24,7 +24,7 @@ const accountData = useAppKitAccount()
 const handleDeposit = async (amount: bigint) => {
   loadingText.value = 'Waiting for transaction to process in blockchain...'
 
-  const allowance = await readContract(wagmiConfig, {
+  const allowance = await readContract(wagmiAdapter.wagmiConfig, {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     address: tokenContract.address,
@@ -36,7 +36,7 @@ const handleDeposit = async (amount: bigint) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   if (allowance < amount) {
-    const approveHash = await writeContract(wagmiConfig, {
+    const approveHash = await writeContract(wagmiAdapter.wagmiConfig, {
       abi: tokenContract.abi,
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
@@ -47,11 +47,11 @@ const handleDeposit = async (amount: bigint) => {
       args: [vaultContract.address, amount - allowance],
     })
 
-    await waitForTransactionReceipt(wagmiConfig, { hash: approveHash })
+    await waitForTransactionReceipt(wagmiAdapter.wagmiConfig, { hash: approveHash })
   }
 
   // Execute main contract call after approval
-  depositHash.value = await writeContract(wagmiConfig, {
+  depositHash.value = await writeContract(wagmiAdapter.wagmiConfig, {
     address: vaultContract.address,
     abi: vaultContract.abi,
     functionName: 'deposit',
@@ -60,7 +60,7 @@ const handleDeposit = async (amount: bigint) => {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  await waitForTransactionReceipt(wagmiConfig, { hash: depositHash.value })
+  await waitForTransactionReceipt(wagmiAdapter.wagmiConfig, { hash: depositHash.value })
 }
 
 const { error: intentError, createIntent } = useIntents()

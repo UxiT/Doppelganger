@@ -1,7 +1,7 @@
 import {ref} from "vue";
 import {readContract} from "@wagmi/core";
 import {tokenContract} from "@/contracts/vaultToken.ts";
-import {wagmiConfig} from "@/config";
+import {wagmiAdapter} from "@/config";
 
 
 export function useTokenSymbol(contractAddress: string) {
@@ -15,7 +15,7 @@ export function useTokenSymbol(contractAddress: string) {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
-    symbol.value = await readContract(wagmiConfig, {
+    symbol.value = await readContract(wagmiAdapter.wagmiConfig, {
       abi: tokenContract.abi,
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error

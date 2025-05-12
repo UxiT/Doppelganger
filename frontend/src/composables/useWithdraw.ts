@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import { writeContract, waitForTransactionReceipt } from "@wagmi/core";
 import { vaultContract } from "@/contracts/vault.ts";
-import { wagmiConfig } from "@/config";
+import {wagmiAdapter} from "@/config";
 
 
 export function useWithdraw(walletAddress: string) {
@@ -12,7 +12,7 @@ export function useWithdraw(walletAddress: string) {
     loading.value = true
     error.value = null
 
-    const withdrawHash = await writeContract(wagmiConfig, {
+    const withdrawHash = await writeContract(wagmiAdapter.wagmiConfig, {
       abi: vaultContract.abi,
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
@@ -23,7 +23,7 @@ export function useWithdraw(walletAddress: string) {
       args: [BigInt(amount), walletAddress]
     })
 
-    await waitForTransactionReceipt(wagmiConfig, {hash: withdrawHash})
+    await waitForTransactionReceipt(wagmiAdapter.wagmiConfig, {hash: withdrawHash})
   }
 
   return {
