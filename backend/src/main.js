@@ -1,4 +1,5 @@
 import express from 'express';
+import { ethers } from 'ethers';
 import jwt from 'jsonwebtoken';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -6,6 +7,8 @@ import { User, Intent, userVaultMapping } from './models.js';
 
 dotenv.config();
 
+const provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_RPC_URL);
+const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 const corsOptions = {
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
     methods: ['GET', 'POST', 'PUT', 'OPTIONS'],
@@ -212,6 +215,30 @@ router.get('/vaults', authenticateToken, async (req, res) => {
     }
 });
 
+router.post("/mint", authenticateToken, async (req, res) => {
+    try {
+        const { address, amount } = req.query;
+
+        if (!address) {
+            return res.status(400).json({ message: 'Address parameter is required' });
+        }
+
+        const vaultTokenAddr = "0x3Ee8Ff2865d5202942c65e91BA537cc815dFA0Fd"
+        const abi = [
+            "function mint(address to, uint256 amount)"
+        ]
+
+        const vaultTokenContract = new ethers.Contract(vaultTokenAddr, abi, signer);
+
+        const tx = await vaultTokenContract.mint(address, amount);
+        const receipt = await tx.wait();
+
+        res.status(200).json({ message: 'Minting successful', txHash: tx.hash });
+    } catch (error) {
+        console.error('Mint error:', error);
+        res.status(500).json({ message: 'Error minting' });
+    }
+});
 
 app.use(express.json())
 app.use('/api', router)
