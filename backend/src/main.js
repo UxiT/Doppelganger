@@ -22,7 +22,7 @@ const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 // Middleware to verify JWT token
-const authenticateToken = (req, res, next) => {
+const authenticateToken = async (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -30,10 +30,16 @@ const authenticateToken = (req, res, next) => {
         return res.status(401).json({ message: 'Authentication token required' });
     }
 
-    jwt.verify(token, JWT_SECRET, (err, user) => {
+    jwt.verify(token, JWT_SECRET, async (err, user) => {
         if (err) {
             return res.status(403).json({ message: 'Invalid or expired token' });
         }
+
+        const userRow = await User.findOne({ where: { id: user.userId } });
+        if (!userRow) {
+            return res.status(403).json({ message: 'Invalid user' });
+        }
+
         req.user = user;
         next();
     });
@@ -72,9 +78,17 @@ router.post('/login', async (req, res) => {
 // Create new intent
 router.post('/intents', authenticateToken, async (req, res) => {
     try {
-        const { amount, transactionId } = req.body;
+        const { amount, transactionId, withdrawWalletAddress } = req.body;
+
+        if (!withdrawWalletAddress) {
+            return res.status(422).json({ message: 'withdrawWalletAddress field is required' });
+        }
+        if (!amount) {
+            return res.status(422).json({ message: 'amount field is required' });
+        }
+
         const userId = req.user.userId;
-        const intent = await Intent.create({ userId, amount, transactionId });
+        const intent = await Intent.create({ userId, amount, transactionId, withdrawWalletAddress });
         const mapping = await userVaultMapping(userId);
 
         res.status(200).json({

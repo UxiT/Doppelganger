@@ -135,6 +135,10 @@ const Intent = sequelize.define(
             type: DataTypes.STRING,
             allowNull: true,
         },
+        withdrawWalletAddress: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
         withdrawPermitted: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
