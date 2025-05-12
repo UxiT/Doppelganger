@@ -6,12 +6,16 @@ export interface Vaults {
   externalVaultAddress: string,
 }
 
+interface VaultsResponse {
+  data: Vaults
+}
+
 export function useVaults() {
   const vaults = ref<Vaults | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  const getVaults = async (intentId: string) => {
+  const getVaultsByIntent = async (intentId: string) => {
     loading.value = true
     error.value = null
 
@@ -27,10 +31,25 @@ export function useVaults() {
     }
   }
 
+  const getVaults = async (): Promise<Vaults | undefined> => {
+    try {
+      const response: VaultsResponse = await api.get(`/vaults`)
+
+      return response.data
+    } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      error.value = err.response?.data?.message || err.message || 'Failed to fetch vaults'
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     vaults,
     loading,
     error,
-    getVaults,
+    getVaultsByIntent,
+    getVaults
   }
 }

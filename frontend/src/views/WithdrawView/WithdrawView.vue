@@ -8,13 +8,13 @@ import { CopyDocument } from "@element-plus/icons-vue"
 import {useVaults} from "@/composables/useVaults.ts";
 import {useTokenSymbol} from "@/composables/useTokenSymbol.ts";
 import {tokenContract} from "@/contracts/vaultToken.ts";
-import {showError} from "@/shared/utils/messageBox.ts";
+import {showError, showSuccess} from "@/shared/utils/messageBox.ts";
 
 const accountData = useAppKitAccount()
 
 const { intents, loading, getIntents } = useIntents()
 const { loading: withdrawLoading, withdraw } = useWithdraw()
-const { vaults, error: vaultsError, getVaults } = useVaults()
+const { vaults, error: vaultsError, getVaultsByIntent } = useVaults()
 const { symbol, getSymbol } = useTokenSymbol(tokenContract.address)
 
 onMounted(() => {
@@ -26,7 +26,7 @@ onMounted(() => {
 })
 
 const handleWithdraw = async (amount: string, intentId: string) => {
-  await getVaults(intentId)
+  await getVaultsByIntent(intentId)
 
   if (vaults.value === null || vaultsError.value !== null) {
     showError('Could not identify withdraw address')
@@ -38,13 +38,14 @@ const handleWithdraw = async (amount: string, intentId: string) => {
   // @ts-expect-error
   await withdraw(amount, vaults.value.externalVaultAddress, accountData.value.address)
       .then(() => {
-        ElMessage.success("Withdraw successful")
+        showSuccess("Withdraw successful")
         getIntents()
       })
       .catch(err => {
         console.error(err)
         showError(err?.message ?? 'Withdraw error')
       })
+    .finally(() => loading.value = false)
 }
 
 const compressTransactionID = (transactionId: string): string => {

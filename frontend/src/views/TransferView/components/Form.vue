@@ -11,6 +11,7 @@ import { type Form } from '@/views/TransferView/types/Form.ts'
 import {wagmiAdapter} from '@/config'
 import { useIntents } from '@/composables/useIntents.ts'
 import { type FormInstance } from "element-plus";
+import {useVaults} from "@/composables/useVaults.ts";
 
 const form = reactive<Form>({ amount: null, withdrawWalletAddress: null })
 const formRef = ref<FormInstance | null>(null)
@@ -21,7 +22,15 @@ const depositHash = ref<string | null>(null)
 
 const accountData = useAppKitAccount()
 
+const { getVaults } = useVaults()
+
 const handleDeposit = async (amount: bigint) => {
+  const vaults = await getVaults()
+
+  if (vaults === undefined) {
+    throw new Error('Could not get vault address')
+  }
+
   loadingText.value = 'Waiting for transaction to process in blockchain...'
 
   const allowance = await readContract(wagmiAdapter.wagmiConfig, {
@@ -30,7 +39,7 @@ const handleDeposit = async (amount: bigint) => {
     address: tokenContract.address,
     abi: tokenContract.abi,
     functionName: 'allowance',
-    args: [accountData.value.address, vaultContract.address],
+    args: [accountData.value.address, vaults.internalVaultAddress],
   })
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -44,7 +53,7 @@ const handleDeposit = async (amount: bigint) => {
       functionName: 'approve',
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
-      args: [vaultContract.address, amount - allowance],
+      args: [vaults.internalVaultAddress, amount - allowance],
     })
 
     await waitForTransactionReceipt(wagmiAdapter.wagmiConfig, { hash: approveHash })
@@ -52,7 +61,9 @@ const handleDeposit = async (amount: bigint) => {
 
   // Execute main contract call after approval
   depositHash.value = await writeContract(wagmiAdapter.wagmiConfig, {
-    address: vaultContract.address,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    address: vaults.internalVaultAddress,
     abi: vaultContract.abi,
     functionName: 'deposit',
     args: [amount],
