@@ -25,7 +25,7 @@ export function useIntents() {
     loading.value = true
     error.value = null
     try {
-      const response = await api.get<Product[]>('/intents')
+      const response = await api.get<Intent[]>('/intents')
       products.value = response.data
     } catch (err: any) {
       error.value = err.response?.data?.message || err.message || 'Failed to fetch intents'

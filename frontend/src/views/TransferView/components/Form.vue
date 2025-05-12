@@ -7,10 +7,10 @@ import { useAppKitAccount } from '@reown/appkit/vue'
 import { vaultContract } from '@/contracts/vault.ts'
 import { tokenContract } from '@/contracts/vaultToken.ts'
 import { showError, showSuccess } from '@/shared/utils/messageBox.ts'
-import { Form } from '@/views/TransferView/types/Form.ts'
+import { type Form } from '@/views/TransferView/types/Form.ts'
 import { wagmiConfig } from '@/config'
-import postV1CreateTransfer from '@/api/postV1CreateTransfer.ts'
 import { useIntents } from '@/composables/useIntents.ts'
+import { type FormInstance } from "element-plus";
 
 const labelWidth = '150px'
 
@@ -23,11 +23,11 @@ const depositHash = ref<string | null>(null)
 const accountData = useAppKitAccount()
 
 const handleDeposit = async (amount: bigint) => {
-  const allowance = await readContract(wagmiConfig, {
+  const allowance: string = await readContract(wagmiConfig, {
     address: tokenContract.address,
     abi: tokenContract.abi,
     functionName: 'allowance',
-    args: [accountData.value.address, accountData.value.address],
+    args: [accountData.value.address, vaultContract.address],
   })
 
   if (allowance < amount) {
@@ -35,7 +35,7 @@ const handleDeposit = async (amount: bigint) => {
       abi: tokenContract.abi,
       address: tokenContract.address,
       functionName: 'approve',
-      args: [accountData.value.address, amount - allowance],
+      args: [vaultContract.address, amount - allowance],
     })
 
     await waitForTransactionReceipt(wagmiConfig, { hash: approveHash })
@@ -57,7 +57,9 @@ const { createIntent } = useIntents()
 async function handleSubmit() {
   isSubmitting.value = true
 
-  await handleDeposit(parseEther(form.amount.toString())).catch((err) => {
+  const amount = parseEther(form.amount.toString())
+
+  await handleDeposit(amount).catch((err) => {
     showError('Transaction was not completed')
     isSubmitting.value = false
 
@@ -65,7 +67,10 @@ async function handleSubmit() {
   })
 
   try {
-    const created = await createIntent(depositHash.value.toString(), form.receiverAddress)
+    const created = await createIntent({
+      amount: amount.toString(),
+      transactionId: depositHash.value.toString(),
+    })
 
     if (created) {
       console.log(created.id)
