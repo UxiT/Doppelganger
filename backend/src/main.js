@@ -10,7 +10,7 @@ dotenv.config();
 const provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_RPC_URL);
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 const corsOptions = {
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', '*'],
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://dg.eagermax.ru'],
     methods: ['GET', 'POST', 'PUT', 'OPTIONS'],
     credentials: true,
     optionsSuccessStatus: 200
@@ -91,6 +91,9 @@ router.post('/login', async (req, res) => {
 router.post('/intents', authenticateToken, async (req, res) => {
     try {
         const { amount, transactionId, withdrawWalletAddress } = req.body;
+
+        // Check address checksum
+        ethers.getAddress(withdrawWalletAddress)
 
         if (!withdrawWalletAddress) {
             return res.status(422).json({ message: 'withdrawWalletAddress field is required' });
