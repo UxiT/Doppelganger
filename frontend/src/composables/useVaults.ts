@@ -16,7 +16,7 @@ export function useVaults() {
     error.value = null
 
     try {
-      const response = await api.get<Vaults>(`/vaults/${intentId}/vaults`)
+      const response = await api.get<Vaults>(`/intents/${intentId}/vaults`)
       vaults.value = response.data
     } catch (err) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
