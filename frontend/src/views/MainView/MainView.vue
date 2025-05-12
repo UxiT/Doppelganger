@@ -4,6 +4,7 @@ import { createAppKit } from '@reown/appkit/vue'
 import { wagmiAdapter, networks, projectId } from '@/config'
 import TransferView from '@/views/TransferView/TransferView.vue'
 import WithdrawView from '@/views/WithdrawView/WithdrawView.vue'
+import FaucetView from "@/views/FaucetView/FaucetView.vue";
 
 const appKit = createAppKit({
   adapters: [wagmiAdapter],
@@ -40,6 +41,9 @@ const handleTabClick = (tab) => {
       </el-tab-pane>
       <el-tab-pane label="Withdraw" name="withdraw">
         <WithdrawView :key="activeTab" />
+      </el-tab-pane>
+      <el-tab-pane label="Faucet" name="faucet">
+        <FaucetView/>
       </el-tab-pane>
     </el-tabs>
   </div>
