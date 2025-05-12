@@ -12,7 +12,7 @@ import {showError, showSuccess} from "@/shared/utils/messageBox.ts";
 
 const accountData = useAppKitAccount()
 
-const { intents, loading, getIntents } = useIntents()
+const { intents, loading, getIntents, markAsPaid } = useIntents()
 const { loading: withdrawLoading, withdraw } = useWithdraw()
 const { vaults, error: vaultsError, getVaultsByIntent } = useVaults()
 const { symbol, getSymbol } = useTokenSymbol(tokenContract.address)
@@ -37,15 +37,18 @@ const handleWithdraw = async (amount: string, intentId: string) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   await withdraw(amount, vaults.value.externalVaultAddress, accountData.value.address)
-      .then(() => {
-        showSuccess("Withdraw successful")
-        getIntents()
-      })
-      .catch(err => {
-        console.error(err)
-        showError(err?.message ?? 'Withdraw error')
-      })
-    .finally(() => loading.value = false)
+
+  loading.value = false
+
+  await markAsPaid(intentId)
+    .then(() => {
+      showSuccess("Withdraw successful")
+      getIntents()
+    })
+    .catch(err => {
+      console.error(err)
+      showError(err?.message ?? 'Withdraw error')
+    });
 }
 
 const compressTransactionID = (transactionId: string): string => {
@@ -85,12 +88,14 @@ const copy = (value: string) => {
         <el-table-column label="Operation">
           <template #default="scope">
             <el-button
+              v-if="scope.row.isWithdrawn === false"
               :disabled="!scope.row.withdrawPermitted"
               :loading="withdrawLoading"
               @click="handleWithdraw(scope.row.amount, scope.row.id)"
             >
               Withdraw
             </el-button>
+            <el-text v-else type="success">Withdrawn</el-text>
           </template>
         </el-table-column>
       </el-table>

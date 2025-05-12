@@ -12,7 +12,6 @@ export function useWithdraw() {
     loading.value = true
     error.value = null
 
-    console.log(walletAddress, amount, BigInt(amount), contractAddress)
     const withdrawHash = await writeContract(wagmiAdapter.wagmiConfig, {
       abi: vaultContract.abi,
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -25,6 +24,8 @@ export function useWithdraw() {
     })
 
     await waitForTransactionReceipt(wagmiAdapter.wagmiConfig, {hash: withdrawHash})
+
+    loading.value = false
   }
 
   return {

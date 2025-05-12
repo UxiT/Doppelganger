@@ -7,6 +7,7 @@ export interface Intent {
   amount: string
   transactionId: string
   withdrawPermitted: boolean
+  isWithdrawn: boolean
   createdAt: Date
 }
 
@@ -54,11 +55,28 @@ export function useIntents() {
     }
   }
 
+  const markAsPaid = async (intentId: string): Promise<void> => {
+    loading.value = true
+
+    try {
+      const response = await api.put(`/intents/${intentId}/properties`, {
+          isWithdrawn: true
+      })
+
+      return response.data
+    } catch (err) {
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     intents,
     loading,
     error,
     getIntents,
     createIntent,
+    markAsPaid
   }
 }
