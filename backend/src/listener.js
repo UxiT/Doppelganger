@@ -1,80 +1,108 @@
 import { ethers } from 'ethers';
 import dotenv from 'dotenv';
-import { Vault } from './models.js';
+import { Vault, sequelize, Intent, VaultMapping } from './models.js';
 
 dotenv.config();
 
+export async function setupListener() {
+    const provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_RPC_URL);
+    const vaultABI = [
+        "event TokensDeposited(address indexed from, uint256 amount)",
+        "function permit(address wallet, uint256 amount)"
+    ];
+    const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
-const provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_RPC_URL);
-const vaultABI = [
-    "event TokensDeposited(address indexed from, uint256 amount)",
-    "function permit(address wallet, uint256 amount)"
-];
+    const processEvents = async (vaultId, vaultContract) => {
+        const transaction = await sequelize.transaction();
 
-const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+        try {
+            const vault = await Vault.findOne({
+                where: { id: vaultId },
+                transaction
+            });
+            const fromBlock = vault.eventsBlockOffset ? parseInt(vault.eventsBlockOffset) : 0;
+            const currentBlock = await provider.getBlockNumber();
+            const adjustedFromBlock = currentBlock - fromBlock >= 500 ? currentBlock - 499 : fromBlock;
 
-// Upon application start, listen for events from all vaults in the database
-const vaults = await Vault.findAll();
-let vaultsAddressMap = new Set();
+            console.log(`Blocks from ${adjustedFromBlock} to ${currentBlock}`);
 
-for (const vault of vaults) {
-    vaultsAddressMap.add(vault.address);
-}
+            const events = await vaultContract.queryFilter(
+                "TokensDeposited",
+                adjustedFromBlock,
+                currentBlock
+            );
 
-for (const address of vaultsAddressMap) {
-    console.log(`Processing vault: ${address}`);
+            console.log(events);
 
-    const vaultContract = new ethers.Contract(
-        address,
-        vaultABI,
-        provider
-    );
+            for (const event of events) {
+                const transactionId = event.transactionHash;
+                const intent = await Intent.findOne({
+                    where: { transactionId }
+                });
 
-    // Listen for TokensDeposited events
-    console.log(`Listening for TokensDeposited events on vault: ${address}`);
-    vaultContract.on("TokensDeposited", async (from, amount, event) => {
-        console.log(`TokensDeposited event: from ${from} amount ${amount} txHash: ${event.transactionHash}`);
+                const vaultMapping = await VaultMapping.findOne({
+                    where: { userId: intent.userId }
+                });
 
-        const intent = await Intent.findOne({
-            where: {
-                transactionId: event.transactionHash
+                if (!vaultMapping) {
+                    console.error(`Vault mapping not found for user ${intent.userId}`);
+                    continue;
+                }
+
+                if (vaultMapping.internalVaultId === vaultId && intent) {
+                    const externalVaultContract = new ethers.Contract(
+                        vaultMapping.externalVault.address,
+                        vaultABI,
+                        provider
+                    );
+
+                    const permitTx = await externalVaultContract.connect(signer).permit(
+                        intent.withdrawWalletAddress,
+                        intent.amount
+                    );
+                    await permitTx.wait();
+
+                    await intent.update({
+                        permitTransactionId: permitTx.hash,
+                        withdrawPermitted: true
+                    }, { transaction });
+                } else {
+                    console.error('Mismatched deposit detected', transactionId);
+                }
             }
-        });
 
-        if (!intent) {
-            console.log(`Intent not found for txHash: ${event.transactionHash}`);
-            return;
+            // Update the last processed block
+            await vault.update({
+                eventsBlockOffset: currentBlock.toString()
+            }, { transaction });
+
+            await transaction.commit();
+        } catch (error) {
+            await transaction.rollback();
+            console.error(`Error processing events for vault ${vaultId}:`, error);
         }
+    };
 
-        const user = await User.findOne({
-            where: {
-                id: intent.userId
-            }
-        });
+    // Upon application start, listen for events from all vaults in the database
+    const vaults = await Vault.findAll();
+    let contractsById = {};
 
-        if (!user) {
-            console.log(`User not found for intent: ${intent.id}`);
-            return;
-        }
-
+    for (const vault of vaults) {
         const vaultContract = new ethers.Contract(
-            user.externalWallet,
+            vault.address,
             vaultABI,
-            signer
+            provider
         );
+        contractsById[vault.id] = vaultContract;
+    }
 
-        const tx = await vaultContract.permit(user.externalWallet, amount);
-        console.log(`Permit transaction: ${tx.hash}`);
+    const processVaults = async () => {
+        for (const vault of vaults) {
+            console.log(`Processing vault: ${vault.address}`);
+            await processEvents(vault.id, contractsById[vault.id]);
+        }
+    }
 
-        tx.wait();
-
-        await Intent.update({
-            permitTransactionId: tx.hash,
-            withdrawPermitted: true,
-        }, {
-            where: {
-                id: intent.id
-            }
-        });
-    });
+    setInterval(processVaults, 60 * 1000); // each 1 minute
+    await processVaults();
 }

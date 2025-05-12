@@ -45,6 +45,14 @@ const authenticateToken = async (req, res, next) => {
     });
 };
 
+// Middleware to log request path and time
+app.use((req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] ${req.method} ${req.path}`);
+    next();
+});
+
+
 // Register new user
 router.post('/register', async (req, res) => {
     try {
@@ -190,7 +198,8 @@ router.get('/intents', authenticateToken, async (req, res) => {
 app.use(express.json())
 app.use('/api', router)
 
-import './listener.js';
+import { setupListener } from './listener.js';
+await setupListener();
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

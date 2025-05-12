@@ -62,6 +62,10 @@ const Vault = sequelize.define(
             allowNull: false,
             defaultValue: DataTypes.NOW,
         },
+        eventsBlockOffset: {
+            type: DataTypes.STRING,
+            allowNull: true
+        }
     },
     {
         underscored: true
