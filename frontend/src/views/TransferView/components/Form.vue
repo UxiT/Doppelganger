@@ -52,10 +52,15 @@ const handleDeposit = async (amount: bigint) => {
   await waitForTransactionReceipt(wagmiConfig, { hash: depositHash.value })
 }
 
-const { createIntent } = useIntents()
+const { error: intentError, createIntent } = useIntents()
 
 async function handleSubmit() {
   isSubmitting.value = true
+
+  if (form.amount === null) {
+    showError("Enter amount")
+    return
+  }
 
   const amount = parseEther(form.amount.toString())
 
@@ -73,9 +78,13 @@ async function handleSubmit() {
     })
 
     if (created) {
-      console.log(created.id)
       showSuccess('Created intent with id ' + created.id)
     }
+
+    if (intentError.value !== null) {
+      showError(intentError.value)
+    }
+
   } catch (error) {
     console.error(error)
 

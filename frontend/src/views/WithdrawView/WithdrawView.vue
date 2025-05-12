@@ -14,8 +14,8 @@ onMounted(() => {
   getIntents()
 })
 
-const handleWithdraw = (amount: string) => {
-    const result = withdraw(amount, accountData.value.address)
+const handleWithdraw = async (amount: string) => {
+    const result = await withdraw(amount, accountData.value.address)
       .then(() => {
         ElMessage.success("Withdraw successful")
         getIntents()
@@ -28,16 +28,18 @@ const handleWithdraw = (amount: string) => {
 <template>
   <el-card class="min-w-[450px]">
     <template #header> Withdraw Form </template>
-    <div class="flex flex-row justify-between" v-if="accountData.isConnected" v-for="intent in intents">
-      <el-text>{{ parseGwei(intent.amount) }}</el-text>
-      <el-button
-        :disabled="!intent.withdrawPermitted"
-        :loading="withdrawLoading"
-        @click="handleWithdraw(intent.amount)"
-        type="primary"
-      >
-        Withdraw
-      </el-button>
+    <div class="wrapper" v-if="accountData.isConnected">
+      <div v-for="intent in intents" :key="intent.id" class="flex flex-row justify-between">
+        <el-text>{{ parseGwei(intent.amount) }}</el-text>
+        <el-button
+          :disabled="!intent.withdrawPermitted"
+          :loading="withdrawLoading"
+          @click="handleWithdraw(intent.amount)"
+          type="primary"
+        >
+          Withdraw
+        </el-button>
+      </div>
     </div>
   </el-card>
 </template>

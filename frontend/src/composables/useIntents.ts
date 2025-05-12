@@ -1,4 +1,3 @@
-// src/composables/useProducts.ts
 import { ref } from 'vue'
 import api from '@/services/api'
 
@@ -17,7 +16,7 @@ export interface CreateIntentRequest {
 }
 
 export function useIntents() {
-  const products = ref<Intent[]>([])
+  const intents = ref<Intent[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
 
@@ -26,7 +25,7 @@ export function useIntents() {
     error.value = null
     try {
       const response = await api.get<Intent[]>('/intents')
-      products.value = response.data
+      intents.value = response.data
     } catch (err: any) {
       error.value = err.response?.data?.message || err.message || 'Failed to fetch intents'
     } finally {
@@ -43,7 +42,7 @@ export function useIntents() {
 
       return response.data
     } catch (err: any) {
-      error.value = err.response?.data?.message || err.message || 'Failed to create product'
+      error.value = err.response?.data?.message || err.message || 'Failed to create intent'
       return null
     } finally {
       loading.value = false
@@ -51,7 +50,7 @@ export function useIntents() {
   }
 
   return {
-    products,
+    intents,
     loading,
     error,
     getIntents,
