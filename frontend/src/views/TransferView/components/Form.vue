@@ -13,17 +13,18 @@ import { wagmiConfig } from '@/config'
 import { useIntents } from '@/composables/useIntents.ts'
 import { type FormInstance } from "element-plus";
 
-const labelWidth = '40%'
-
-const form = reactive<Form>({ amount: null, receiverAddress: null })
+const form = reactive<Form>({ amount: null, withdrawWalletAddress: null })
 const formRef = ref<FormInstance | null>(null)
 const isSubmitting = ref(false)
+const loadingText = ref<string>('Loading...')
 const dialogVisible = ref(false)
 const depositHash = ref<string | null>(null)
 
 const accountData = useAppKitAccount()
 
 const handleDeposit = async (amount: bigint) => {
+  loadingText.value = 'Waiting for transaction to process in blockchain...'
+
   const allowance: string = await readContract(wagmiConfig, {
     address: tokenContract.address,
     abi: tokenContract.abi,
@@ -63,6 +64,11 @@ async function handleSubmit() {
     return
   }
 
+  if (form.withdrawWalletAddress === null) {
+    showError("Enter receiver address")
+    return
+  }
+
   const amount = parseEther(form.amount.toString())
 
   await handleDeposit(amount).catch((err) => {
@@ -72,14 +78,22 @@ async function handleSubmit() {
     throw err
   })
 
+  if (depositHash.value === null) {
+    showError("transaction error")
+    return
+  }
+
   try {
+    loadingText.value = 'Loading...'
+
     const created = await createIntent({
       amount: amount.toString(),
       transactionId: depositHash.value.toString(),
+      withdrawWalletAddress: form.withdrawWalletAddress,
     })
 
     if (created) {
-      showSuccess('Created intent with id ' + created.id)
+      showSuccess('Created intent with id ' + created?.intentId)
     }
 
     if (intentError.value !== null) {
@@ -92,12 +106,18 @@ async function handleSubmit() {
     showError('An error occurred during the transfer.')
   }
 
+  loadingText.value = 'Loading...'
   isSubmitting.value = false
 }
 </script>
 
 <template>
-  <el-form v-loading="isSubmitting" :model="form" ref="formRef">
+  <el-form
+    v-loading="isSubmitting"
+    :element-loading-text="loadingText"
+    :model="form"
+    ref="formRef"
+  >
     <el-form-item label="Amount" class="label">
       <el-input-number
         v-model="form.amount"
@@ -112,7 +132,7 @@ async function handleSubmit() {
     </el-form-item>
 
     <el-form-item label="Receiver Address" class="label">
-      <el-input v-model="form.receiverAddress" placeholder="Enter receiver address" />
+      <el-input v-model="form.withdrawWalletAddress" placeholder="Enter receiver address" />
     </el-form-item>
 
     <div class="flex items-center justify-center">

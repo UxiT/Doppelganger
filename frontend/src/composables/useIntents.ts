@@ -11,8 +11,9 @@ export interface Intent {
 }
 
 export interface CreateIntentRequest {
-  amount: string
-  transactionId: string
+  amount: string,
+  transactionId: string,
+  withdrawWalletAddress: string,
 }
 
 export function useIntents() {
@@ -33,15 +34,15 @@ export function useIntents() {
     }
   }
 
-  const createIntent = async (createIntentRequest: CreateIntentRequest): Promise<Intent | null> => {
+  const createIntent = async (createIntentRequest: CreateIntentRequest) => {
     loading.value = true
     error.value = null
 
     try {
-      const response = await api.post<{ data: Intent }>('/intents', createIntentRequest)
+      const response = await api.post('/intents', createIntentRequest)
 
       return response.data
-    } catch (err: any) {
+    } catch (err) {
       error.value = err.response?.data?.message || err.message || 'Failed to create intent'
       return null
     } finally {

@@ -1,4 +1,4 @@
 export interface Form {
   amount: number | null
-  receiverAddress: string | null
+  withdrawWalletAddress: string | null
 }

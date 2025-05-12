@@ -87,7 +87,6 @@ const copy = (value: string) => {
           </template>
         </el-table-column>
       </el-table>
-      <el-text v-if="intents.length === 0 && loading === false">You do not have active withdrawals</el-text>
     </div>
   </el-card>
 </template>
