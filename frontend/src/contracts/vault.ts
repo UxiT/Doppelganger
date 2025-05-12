@@ -13,5 +13,21 @@ export const vaultContract = {
       ],
       outputs: [],
     },
+    {
+      type: 'function',
+      name: 'withdraw',
+      stateMutability: 'nonpayable',
+      inputs: [
+        {
+          name: 'amount',
+          type: 'uint256',
+        },
+        {
+          name: 'to',
+          type: 'address',
+        }
+      ],
+      outputs: [],
+    }
   ],
 } as const
